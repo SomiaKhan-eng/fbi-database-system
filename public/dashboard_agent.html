@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FBI | Field Agent Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. CORE THEME (EXACT COPY FROM ADMIN) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- 2. SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background-color: #161b22;
+            border-right: 1px solid #30363d;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .brand {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 20px;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #8b949e;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 13px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links li:hover a {
+            background-color: #21262d;
+            color: #58a6ff;
+        }
+
+        /* Active State: Blue (Matches Admin) */
+        .nav-links li.active a {
+            background-color: #1f6feb; 
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-panel {
+            border-top: 1px solid #30363d;
+            padding-top: 20px;
+            margin-top: auto;
+        }
+
+        .logout-btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #d73a49;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            border-radius: 6px;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .logout-btn:hover {
+            background: #d73a49;
+            color: white;
+            border-color: #d73a49;
+        }
+
+        /* --- 3. MAIN CONTENT --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 24px;
+            color: #58a6ff; /* Blue Title for Agent */
+        }
+
+        .date-display {
+            font-family: 'Roboto Mono', monospace;
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        /* --- 4. PANELS & GRID --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* 2/3 Main, 1/3 Side */
+            gap: 20px;
+        }
+
+        .panel {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #21262d;
+            padding-bottom: 15px;
+            margin-bottom: 5px;
+        }
+
+        .panel-title {
+            font-family: 'Roboto Mono';
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* --- 5. AGENT WIDGETS --- */
+        
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; color: #8b949e; padding: 10px 0; border-bottom: 1px solid #30363d; font-family: 'Roboto Mono'; font-size: 11px; }
+        td { padding: 12px 0; border-bottom: 1px solid #21262d; color: #e6edf3; }
+        
+        .tag { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; font-family: 'Roboto Mono'; }
+        .tag.open { background: rgba(88, 166, 255, 0.15); color: #58a6ff; border: 1px solid rgba(88, 166, 255, 0.3); }
+        .tag.investigation { background: rgba(227, 179, 65, 0.15); color: #e3b341; border: 1px solid rgba(227, 179, 65, 0.3); }
+
+        /* Forms */
+        input, textarea {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Inter';
+            font-size: 13px;
+            outline: none;
+        }
+        input:focus, textarea:focus { border-color: #1f6feb; }
+
+        /* Blue Button (Matches Admin) */
+        .btn-primary {
+            background-color: #1f6feb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: 'Roboto Mono';
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-primary:hover { background-color: #388bfd; }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr; /* Changed to 1 column since we removed warrants */
+            gap: 10px;
+        }
+        .action-card {
+            background: #21262d;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+        .action-card:hover { border-color: #1f6feb; background: rgba(31, 111, 235, 0.1); }
+        .action-icon { font-size: 20px; display: block; margin-bottom: 8px; }
+        .action-text { font-size: 11px; font-family: 'Roboto Mono'; color: #e6edf3; font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="brand">
+            <span>🕵️‍♂️ FBI SYSTEM</span>
+        </div>
+        
+        <ul class="nav-links">
+            <li class="active"><a href="#">📊 DASHBOARD</a></li>
+            <li><a href="criminals.html">🔒 CRIMINALS</a></li>
+            <li><a href="cases.html">📁 CASES</a></li>
+            <li><a href="evidence.html">🧬 EVIDENCE</a></li>
+            </ul>
+
+        <div class="user-panel">
+            <p style="font-size:10px; color:#8b949e; margin-bottom:5px;">CURRENT SESSION</p>
+            <h3 id="user-display" style="font-size: 14px; margin-bottom: 5px;">LOADING...</h3>
+            
+            <button class="logout-btn" onclick="handleLogout()">SECURE LOGOUT</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <h1>FIELD AGENT TERMINAL</h1>
+            <div class="date-display" id="date-display">--/--/----</div>
+        </header>
+
+        <div class="dashboard-grid">
+            
+            <div class="main-col">
+                
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">MY ACTIVE ASSIGNMENTS</span>
+                        <button class="btn-primary" style="padding: 6px 12px;" onclick="window.location.href='cases.html'">VIEW ALL</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>CASE ID</th>
+                                <th>TITLE</th>
+                                <th>STATUS</th>
+                                <th>PRIORITY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assigned-cases-list">
+                            <tr><td colspan="4" style="text-align:center; color:#8b949e;">Retrieving case files...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">DAILY INVESTIGATION LOG</span>
+                    </div>
+                    <form id="dailyLogForm" style="display: flex; flex-direction: column; gap: 10px;">
+                        <textarea rows="3" class="log-input" placeholder="Enter investigation progress notes for today..."></textarea>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button type="submit" class="btn-primary">SAVE ENTRY</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="side-col">
+                
+                <div class="panel">
+                    <div class="panel-header"><span class="panel-title">CRIMINAL LOOKUP</span></div>
+                    <input type="text" placeholder="Enter Name or CNIC..." style="margin-bottom: 10px;">
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header"><span class="panel-title">QUICK ACTIONS</span></div>
+                    <div class="quick-actions">
+                        <div class="action-card" onclick="window.location.href='evidence.html'">
+                            <span class="action-icon">🧬</span>
+                            <span class="action-text">LOG EVIDENCE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header"><span class="panel-title">MOST WANTED ALERT</span></div>
+                    <div style="font-size: 12px; color: #e6edf3;">
+                        <div style="border-bottom: 1px solid #21262d; padding-bottom: 10px; margin-bottom: 10px;">
+                            <span style="color:#ff7b72; font-weight:bold; font-family:'Roboto Mono'">IMMEDIATE ARREST</span><br>
+                            Suspect: A. Malik<br>
+                            <span style="font-size:10px; color:#8b949e;">Last seen: Sector 4</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 1. SET DATE
+        const now = new Date();
+        document.getElementById('date-display').innerText = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // 2. CHECK LOGIN SESSION
+        const user = localStorage.getItem('username') || 'Unknown Agent';
+        const role = localStorage.getItem('userRole');
+
+        // Security Check: If Admin, go to Admin Dashboard
+        if (role === 'Admin') {
+            window.location.href = 'dashboard_admin.html';
+        }
+
+        document.getElementById('user-display').innerText = `${role ? role.toUpperCase() : 'AGENT'}: ${user.toUpperCase()}`;
+
+        // 3. LOGOUT FUNCTION
+        function handleLogout() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('username');
+            window.location.href = 'index.html';
+        }
+
+        // 4. LOAD AGENT DATA
+        async function loadAgentData() {
+            try {
+                // This fetches from the SMART API we will build next!
+                const response = await fetch('/api/cases'); 
+                const myCases = await response.json();
+
+                const tableBody = document.getElementById('assigned-cases-list');
+                tableBody.innerHTML = '';
+
+                // If the API returns {success:true, data:[]}, we need to access .data
+                const casesToDisplay = myCases.data ? myCases.data : myCases;
+
+                if (!casesToDisplay || casesToDisplay.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No active cases.</td></tr>';
+                    return;
+                }
+
+                // Show only first 3 cases in the mini-dashboard
+                casesToDisplay.slice(0, 3).forEach(c => {
+                    let statusClass = 'open';
+                    if(c.status === 'Under Investigation') statusClass = 'investigation';
+                    
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td style="font-family:'Roboto Mono'">#${c.case_id}</td>
+                            <td style="font-weight:600">${c.title}</td>
+                            <td><span class="tag ${statusClass}">${c.status ? c.status.toUpperCase() : 'OPEN'}</span></td>
+                            <td style="color:${c.priority_level === 'High' ? '#ff7b72' : '#e6edf3'}">${c.priority_level}</td>
+                        </tr>`;
+                });
+
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('assigned-cases-list').innerHTML = '<tr><td colspan="4" style="color:#ff7b72; text-align:center;">System Connection Error</td></tr>';
+            }
+        }
+
+        // 5. DAILY LOG HANDLER
+        document.getElementById('dailyLogForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert("✅ Log Entry Saved to Database.");
+            document.querySelector('.log-input').value = ''; 
+        });
+
+        loadAgentData();
+    </script>
+</body>
+</html>

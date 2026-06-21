@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FBI | Lab Staff Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        /* ADMIN THEME (Red) */
+        body { background-color: #0b1118; color: #e6edf3; font-family: 'Inter', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .login-container { width: 450px; padding: 40px; background: #161b22; border: 1px solid #d73a49; border-radius: 12px; text-align: center; }
+        h1 { font-family: 'Roboto Mono'; color: #d73a49; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: white; margin-bottom: 15px; outline: none; }
+        input:focus { border-color: #d73a49; }
+        button { width: 100%; padding: 12px; background: #d73a49; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'Roboto Mono'; }
+        button:hover { background: #b62324; }
+        label { display: block; text-align: left; color: #8b949e; font-size: 11px; margin-bottom: 5px; font-family: 'Roboto Mono'; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>NEW FORENSIC PROFILE</h1>
+        <p style="color:#8b949e; margin-bottom:20px;">CREATE HQ COMMAND ACCOUNT</p>
+
+        <form id="regForm">
+            <label>FULL NAME</label>
+            <input type="text" id="full_name" required>
+
+            <label>USERNAME</label>
+            <input type="text" id="username" required>
+
+            <label>PASSWORD</label>
+            <input type="password" id="password" required>
+
+            <button type="submit">GRANT CLEARANCE</button>
+        </form>
+        
+        <p style="margin-top:15px; font-size:12px;">
+            <a href="login_forensic.html">&larr; Back to Login</a>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('regForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                full_name: document.getElementById('full_name').value,
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: 'Forensic' // <--- 🛑 FORCED ROLE!
+            };
+
+            const res = await fetch('/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            
+            if(data.success) {
+                alert("✅ forensic Registered! Please Log In.");
+                window.location.href = 'login_forensic.html';
+            } else {
+                alert("❌ Error: " + data.message);
+            }
+        });
+    </script>
+</body>
+</html>

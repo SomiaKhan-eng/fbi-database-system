@@ -1,26 +1,27 @@
-# 🔍 FBI Database System
+<div align="center">
 
-> A role-based case management database system modelled on FBI operational structure — built with a full web interface and MySQL backend.
+# FBI Database System
 
----
+### A role-based case management system modelled on FBI operational structure
 
-## 📄 Documentation
+![Node.js](https://img.shields.io/badge/Node.js-6E40C9?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-6E40C9?style=for-the-badge&logo=express&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-6E40C9?style=for-the-badge&logo=mysql&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-6E40C9?style=for-the-badge&logo=javascript&logoColor=white)
 
-Full project documentation including ER diagrams, schema design, system architecture and screenshots is available below.
-
-[📥 View Full Documentation](https://drive.google.com/file/d/1tKG14aSn0avhGzVKV8bti5ydhhNFk-1h/view?usp=sharing)
-
----
-
-## 💡 About
-
-This project simulates a real-world law enforcement database system. It supports multiple user roles — each with their own dashboard, access level and responsibilities — reflecting how a real case management system would operate across departments.
-
-The system handles case tracking, criminal records, evidence management, warrant processing, and agent assignments — all through a browser-based interface backed by a relational MySQL database.
+</div>
 
 ---
 
-## 👥 User Roles
+## About
+
+This project simulates a real-world law enforcement database system. It supports multiple user roles, each with their own dashboard, access level, and responsibilities, reflecting how a real case management system would operate across departments.
+
+The system handles case tracking, criminal records, evidence management, warrant processing, and agent assignments, all through a browser-based interface backed by a relational MySQL database.
+
+---
+
+## User Roles
 
 | Role | Access |
 |---|---|
@@ -29,58 +30,58 @@ The system handles case tracking, criminal records, evidence management, warrant
 | Analyst | Data analysis, case insights |
 | Forensic | Evidence management, forensic reports |
 
-Each role has its own login, registration and dedicated dashboard.
+Each role has its own login, registration, and dedicated dashboard.
 
 ---
 
-## ✨ Features
+## Features
 
-- **Role-Based Authentication** — separate login and dashboards per role
-- **Case Management** — create, view and update case records
-- **Criminal Records** — manage criminal profiles and history
-- **Evidence Tracking** — log and manage case evidence
-- **Warrant System** — issue and track warrants
-- **Agent Management** — assign agents to cases
-- **Admin Panel** — full system oversight and user control
+- Role-based authentication with separate login and dashboards per role
+- Case management — create, view, update, and delete case records
+- Criminal records — manage criminal profiles, arrests, and dossiers
+- Evidence tracking — log, attach files to, and manage case evidence
+- Warrant system — issue, view, and revoke warrants
+- Agent management — recruit, assign, and discharge agents
+- Investigation logs — per-case activity log tied to the logged-in user
+- Dashboard stats — live counts of cases, agents, and criminals
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
 | Frontend | HTML · CSS · JavaScript |
-| Backend | Node.js · Express.js |
+| Backend | Node.js · Express |
 | Database | MySQL |
-| Auth | express-session |
 
 ---
 
-## 🗄️ Database
+## Database
 
-Fully relational MySQL schema covering cases, criminals, agents, evidence, warrants and users — with role-based access control enforced at both the UI and server level.
-
-The complete SQL schema is included in the `/sql` folder.
+Fully relational MySQL schema covering agents, criminals, cases, evidence, warrants, and users, with foreign key constraints enforcing referential integrity between tables. The complete SQL schema is included in the `/sql` folder.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ```bash
 # Clone the repository
 git clone https://github.com/SomiaKhan-eng/fbi-database-system.git
-
-# Navigate to server
-cd fbi-database-system/server
+cd fbi-database-system
 
 # Install dependencies
+cd server
 npm install
 
-# Import the database schema
-# Run the SQL file in /sql folder via MySQL Workbench or CLI
+# Set up your environment variables
+cp .env.example .env
+# then edit .env with your own MySQL credentials
 
-# Set up your .env file with:
-# DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+# Import the database schema
+# Run the files in /sql via MySQL Workbench or CLI, in order:
+#   1. DBS PROJETC DATABASE.sql
+#   2. FBI DATABASE SECOND FILE.sql
 
 # Start the server
 node server.js
@@ -88,9 +89,11 @@ node server.js
 
 Then open `http://localhost:3000` in your browser.
 
+> Never commit your real `.env` file — it's excluded via `.gitignore`. Use `.env.example` as the template.
+
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 fbi-database-system/
@@ -106,20 +109,25 @@ fbi-database-system/
 │   ├── warrants.html           # Warrant system
 │   └── agents.html             # Agent management
 ├── server/
-│   └── server.js               # Express backend
+│   ├── server.js                # Express backend
+│   └── .env.example             # Environment variable template
 ├── sql/
-│   └── DBS PROJECT DATABASE.sql
-└── Database System Project Documentation.pdf
+│   ├── DBS PROJETC DATABASE.sql
+│   └── FBI DATABASE SECOND FILE.sql
+└── .gitignore
 ```
 
 ---
 
-## 🚧 Status
+## Known Limitations
 
-Most core features are working. Some refinements ongoing.
+This is an academic project, not a production system. A few things worth noting if you build on it:
+
+- Passwords are currently stored and compared in plain text rather than hashed (`bcrypt` is a natural next step here).
+- IDs for several tables (criminals, cases, evidence, warrants) are generated manually via `MAX(id) + 1`, which is not safe under concurrent writes — auto-increment columns would be the fix.
 
 ---
 
-## 👩‍💻 Author
+## Author
 
 **Somia Khan** — [GitHub](https://github.com/SomiaKhan-eng)

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FBI | System Redirect</title>
+    <script>
+        // --- ROUTER LOGIC ---
+        // Checks credentials and sends user to the specific dashboard file
+        
+        const role = localStorage.getItem('userRole');
+        const user = localStorage.getItem('username');
+
+        // 1. If no session, kick them out
+        if (!role || !user) {
+            window.location.href = 'index.html'; 
+        }
+        
+        // 2. Route based on Role
+        else if (role === 'Admin') {
+            window.location.href = 'dashboard_admin.html';
+        } 
+        else if (role === 'Agent') {
+            window.location.href = 'dashboard_agent.html';
+        }
+        else if (role === 'Analyst') {
+            window.location.href = 'dashboard_analyst.html';
+        }
+        // ✅ ADDED THIS MISSING BLOCK:
+        else if (role === 'Forensic') {
+            window.location.href = 'dashboard_forensic.html';
+        }
+        
+        // 3. Fallback (Unknown Role)
+        else {
+            alert("Access Denied: Unknown Role");
+            window.location.href = 'index.html';
+        }
+    </script>
+</head>
+<body>
+    <h3 style="color:white; font-family:sans-serif; text-align:center; margin-top:20%;">Redirecting to Secure Terminal...</h3>
+</body>
+</html>

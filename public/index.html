@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FBI | Department Select</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #0b1118; color: #fff; font-family: 'Roboto Mono', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        h1 { margin-bottom: 40px; text-shadow: 0 0 10px rgba(31, 111, 235, 0.5); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { 
+            background: #161b22; border: 1px solid #30363d; padding: 30px; 
+            text-align: center; cursor: pointer; border-radius: 8px; transition: 0.3s; width: 200px;
+        }
+        .card:hover { transform: translateY(-5px); border-color: #58a6ff; box-shadow: 0 0 20px rgba(88, 166, 255, 0.2); }
+        h3 { margin-bottom: 10px; font-size: 16px; }
+        p { color: #8b949e; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <img src="logo.png" width="80" style="margin-bottom: 20px;">
+    <h1>AUTHORIZED ACCESS PORTAL</h1>
+    
+    <div class="grid">
+        <div class="card" onclick="window.location.href='login_admin.html'">
+            <h3 style="color:#d73a49;">ADMINISTRATION</h3>
+            <p>HQ Command Center</p>
+        </div>
+        <div class="card" onclick="window.location.href='login_agent.html'">
+            <h3 style="color:#238636;">FIELD AGENTS</h3>
+            <p>Active Investigations</p>
+        </div>
+        <div class="card" onclick="window.location.href='login_analyst.html'">
+            <h3 style="color:#1f6feb;">DATA ANALYTICS</h3>
+            <p>Intelligence & Stats</p>
+        </div>
+        <div class="card" onclick="window.location.href='login_forensic.html'">
+            <h3 style="color:#e3b341;">FORENSIC LAB</h3>
+            <p>Evidence Processing</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FBI | Warrant Board</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE THEME (Matches Dashboard) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background-color: #161b22;
+            border-right: 1px solid #30363d;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .brand {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 20px;
+        }
+        
+        .nav-links { list-style: none; flex-grow: 1; display: flex; flex-direction: column; gap: 5px; }
+        .nav-links li a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px;
+            text-decoration: none; color: #8b949e;
+            font-family: 'Roboto Mono', monospace; font-size: 13px;
+            border-radius: 6px; transition: 0.2s;
+        }
+        .nav-links li:hover a { background-color: #21262d; color: #58a6ff; }
+        .nav-links li.active a { background-color: #1f6feb; color: white; font-weight: bold; }
+
+        .user-panel { border-top: 1px solid #30363d; padding-top: 20px; margin-top: auto; }
+        
+        /* UPDATED LOGOUT BUTTON STYLE */
+        .logout-btn {
+            background: #21262d; border: 1px solid #30363d; color: #d73a49;
+            padding: 10px; width: 100%; cursor: pointer;
+            font-family: 'Roboto Mono', monospace; font-size: 12px;
+            border-radius: 6px; transition: 0.2s; margin-top: 10px;
+        }
+        .logout-btn:hover { background: #d73a49; color: white; border-color: #d73a49; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { flex-grow: 1; padding: 40px; overflow-y: auto; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; border-bottom: 1px solid #30363d; padding-bottom: 20px;
+        }
+        h1 { font-family: 'Roboto Mono', monospace; font-size: 24px; color: #a371f7; }
+
+        /* --- BUTTONS --- */
+        .btn-legal {
+            background-color: #a371f7; color: white; border: none;
+            padding: 8px 16px; border-radius: 6px;
+            font-family: 'Roboto Mono', monospace; font-size: 12px;
+            cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .btn-legal:hover { background-color: #8957e5; }
+
+        .btn-cancel {
+            background: transparent; border: 1px solid #30363d; color: #8b949e;
+            padding: 8px 16px; border-radius: 6px; cursor: pointer;
+            font-family: 'Roboto Mono'; font-size: 12px;
+        }
+        .btn-cancel:hover { background: #21262d; color: white; }
+
+        /* --- WARRANT GRID SYSTEM --- */
+        .warrant-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; 
+        }
+
+        .warrant-card {
+            background: #161b22; border: 1px solid #30363d;
+            border-radius: 6px; padding: 20px; position: relative;
+            display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s;
+        }
+        .warrant-card:hover { transform: translateY(-2px); border-color: #a371f7; }
+
+        .w-header { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #30363d; }
+        .w-type { font-size: 14px; font-weight: bold; color: white; font-family: 'Inter'; line-height: 1.4; }
+        .w-badge { 
+            display: inline-block; font-size: 10px; padding: 3px 8px; border-radius: 10px; 
+            font-family: 'Roboto Mono'; font-weight: bold; margin-bottom: 10px;
+        }
+        .status-Active { background: rgba(46, 160, 67, 0.15); color: #3fb950; border: 1px solid rgba(46, 160, 67, 0.4); }
+        .status-Expired { background: rgba(215, 58, 73, 0.15); color: #ff7b72; border: 1px solid rgba(215, 58, 73, 0.4); }
+
+        .w-body { flex-grow: 1; margin-bottom: 15px; }
+        .w-row { display: flex; justify-content: space-between; font-size: 12px; color: #8b949e; margin-bottom: 8px; font-family: 'Roboto Mono'; }
+        .w-val { color: #e6edf3; }
+
+        .w-footer { padding-top: 15px; border-top: 1px dashed #30363d; display: flex; align-items: center; justify-content: space-between; }
+        .w-judge { font-size: 11px; color: #a371f7; font-family: 'Roboto Mono'; }
+        
+        .btn-void {
+            background: transparent; border: 1px solid #30363d; color: #ff7b72;
+            padding: 5px 10px; border-radius: 4px; font-size: 10px; 
+            cursor: pointer; font-family: 'Roboto Mono';
+        }
+        .btn-void:hover { background: rgba(215, 58, 73, 0.1); border-color: #ff7b72; }
+
+        /* --- MODALS --- */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background-color: #161b22; padding: 30px; border-radius: 8px;
+            width: 500px; border: 1px solid #30363d; box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; color: #8b949e; font-size: 11px; font-family: 'Roboto Mono'; margin-bottom: 5px; }
+        input, select {
+            width: 100%; background: #0d1117; border: 1px solid #30363d;
+            color: white; padding: 10px; border-radius: 4px; font-family: 'Inter'; font-size: 13px;
+        }
+        input:focus, select:focus { outline: none; border-color: #a371f7; }
+        
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+        .btn-red-fill { background: #d73a49; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="brand">
+            <span>🕵️‍♂️ FBI SYSTEM</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">📊 DASHBOARD</a></li>
+            <li><a href="agents.html">🕶️ AGENTS</a></li>
+            <li><a href="criminals.html">🔒 CRIMINALS</a></li>
+            <li><a href="cases.html">📁 CASES</a></li>
+            <li><a href="evidence.html">🧬 EVIDENCE</a></li>
+            <li class="active"><a href="warrants.html">⚖️ WARRANTS</a></li>
+        </ul>
+        <div class="user-panel">
+            <p style="font-size:10px; color:#8b949e; margin-bottom:5px;">CURRENT SESSION</p>
+            <h3 id="user-display" style="font-size: 14px; margin-bottom: 5px;">LOADING...</h3>
+            
+            <button class="logout-btn" onclick="handleLogout()">SECURE LOGOUT</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <h1 style="color: #a371f7;">LEGAL WARRANTS</h1>
+            <button class="btn-legal" onclick="openModal()">+ ISSUE WARRANT</button>
+        </header>
+
+        <div id="warrant-list" class="warrant-grid">
+            <p style="color:#8b949e">Accessing judicial database...</p>
+        </div>
+    </main>
+
+    <div id="wModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-family:'Roboto Mono'; margin-bottom:20px; color:#a371f7; border-bottom: 1px solid #30363d; padding-bottom: 10px;">ISSUE JUDICIAL WARRANT</h2>
+            <form id="addWarrantForm">
+                <div class="form-group">
+                    <label>WARRANT TYPE (Include Target Name)</label>
+                    <input type="text" id="w_type" placeholder="e.g. Search Warrant: Residence of suspect..." required>
+                </div>
+                <div class="form-group">
+                    <label>ISSUING AUTHORITY (Judge/Officer)</label>
+                    <input type="text" id="w_by" required>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>ISSUE DATE</label>
+                        <input type="date" id="w_issue" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>EXPIRY DATE</label>
+                        <input type="date" id="w_expiry" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">CANCEL</button>
+                    <button type="submit" class="btn-legal">AUTHORIZE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content" style="border: 1px solid #d73a49; width: 400px; text-align: center;">
+            <h2 style="font-family:'Roboto Mono'; margin-bottom:15px; color:#d73a49;">⚖️ VOID WARRANT</h2>
+            <p style="margin-bottom: 25px; font-size: 13px; color: #8b949e; line-height: 1.5;">
+                You are about to legally void this warrant. This action is irreversible and will be logged in the judicial history.
+            </p>
+            <input type="hidden" id="deleteTargetId">
+            <div class="form-actions" style="justify-content: center;">
+                <button class="btn-cancel" onclick="closeDeleteModal()">ABORT</button>
+                <button class="btn-red-fill" onclick="executeDelete()">VOID WARRANT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        const role = localStorage.getItem('userRole') || 'Guest';
+        const user = localStorage.getItem('username') || 'Unknown';
+        document.getElementById('user-display').innerText = `${role.toUpperCase()}: ${user.toUpperCase()}`;
+
+        // --- 2. LOAD DATA ---
+        async function loadWarrants() {
+            try {
+                const res = await fetch('/api/warrants');
+                const data = await res.json();
+                const grid = document.getElementById('warrant-list');
+                grid.innerHTML = '';
+                const today = new Date();
+
+                if (data.length === 0) {
+                    grid.innerHTML = '<p style="color:#8b949e">No active warrants on file.</p>';
+                    return;
+                }
+
+                data.forEach(w => {
+                    const expiry = new Date(w.expiry_date);
+                    const isExpired = expiry < today;
+                    const status = isExpired ? 'Expired' : 'Active';
+
+                    grid.innerHTML += `
+                        <div class="warrant-card">
+                            <div class="w-header">
+                                <span class="w-badge status-${status}">${status.toUpperCase()}</span>
+                                <div class="w-type">${w.warrant_type}</div>
+                            </div>
+                            <div class="w-body">
+                                <div class="w-row">
+                                    <span>ISSUED:</span> 
+                                    <span class="w-val">${new Date(w.issue_date).toLocaleDateString()}</span>
+                                </div>
+                                <div class="w-row">
+                                    <span>EXPIRES:</span> 
+                                    <span class="w-val" style="color:${isExpired ? '#ff7b72' : '#e6edf3'}">${expiry.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            <div class="w-footer">
+                                <div class="w-judge">⚖️ ${w.issued_by.toUpperCase()}</div>
+                                <button class="btn-void" onclick="openDeleteModal(${w.warrant_id})">VOID</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('warrant-list').innerHTML = '<p style="color:#ff7b72">System Connection Error.</p>';
+            }
+        }
+
+        // --- 3. ADD LOGIC ---
+        document.getElementById('addWarrantForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                warrant_type: document.getElementById('w_type').value,
+                issued_by: document.getElementById('w_by').value,
+                issue_date: document.getElementById('w_issue').value,
+                expiry_date: document.getElementById('w_expiry').value
+            };
+
+            try {
+                const res = await fetch('/api/warrants/add', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if(result.success) {
+                    closeModal();
+                    loadWarrants(); 
+                } else {
+                    alert('Error adding warrant');
+                }
+            } catch(e) { console.error(e); }
+        });
+
+        // --- 4. DELETE LOGIC ---
+        function openDeleteModal(id) {
+            document.getElementById('deleteTargetId').value = id;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        async function executeDelete() {
+            const id = document.getElementById('deleteTargetId').value;
+            try {
+                const res = await fetch('/api/warrants/' + id, { method: 'DELETE' });
+                const result = await res.json();
+                
+                if(result.success) {
+                    closeDeleteModal();
+                    loadWarrants();
+                } else {
+                    alert('Database Error: ' + result.message);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // --- 5. LOGOUT FUNCTION (Matched to Admin Dashboard) ---
+        function handleLogout() {
+            // Clear session data
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('username');
+            // Redirect to main entry point
+            window.location.href = 'index.html';
+        }
+
+        // --- 6. UI HELPERS ---
+        function openModal() { document.getElementById('wModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('wModal').style.display = 'none'; }
+
+        // Start
+        loadWarrants();
+    </script>
+</body>
+</html>

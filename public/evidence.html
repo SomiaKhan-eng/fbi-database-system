@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FBI | Evidence Vault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE THEME (Matches Dashboard) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background-color: #161b22;
+            border-right: 1px solid #30363d;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .brand {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 20px;
+        }
+        
+        .nav-links { list-style: none; flex-grow: 1; display: flex; flex-direction: column; gap: 5px; }
+        .nav-links li a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px;
+            text-decoration: none; color: #8b949e;
+            font-family: 'Roboto Mono', monospace; font-size: 13px;
+            border-radius: 6px; transition: 0.2s;
+        }
+        .nav-links li:hover a { background-color: #21262d; color: #58a6ff; }
+        .nav-links li.active a { background-color: #1f6feb; color: white; font-weight: bold; }
+
+        .user-panel { border-top: 1px solid #30363d; padding-top: 20px; margin-top: auto; }
+        .logout-btn {
+            background: #21262d; border: 1px solid #30363d; color: #d73a49;
+            padding: 10px; width: 100%; cursor: pointer;
+            font-family: 'Roboto Mono', monospace; font-size: 12px;
+            border-radius: 6px; transition: 0.2s; margin-top: 10px;
+        }
+        .logout-btn:hover { background: #d73a49; color: white; border-color: #d73a49; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { flex-grow: 1; padding: 40px; overflow-y: auto; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; border-bottom: 1px solid #30363d; padding-bottom: 20px;
+        }
+        h1 { font-family: 'Roboto Mono', monospace; font-size: 24px; color: #e6edf3; }
+
+        /* --- BUTTONS --- */
+        .btn-primary {
+            background-color: #1f6feb; color: white; border: none;
+            padding: 8px 16px; border-radius: 6px;
+            font-family: 'Roboto Mono', monospace; font-size: 12px;
+            cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .btn-primary:hover { background-color: #388bfd; }
+
+        .btn-cancel {
+            background: transparent; border: 1px solid #30363d; color: #8b949e;
+            padding: 8px 16px; border-radius: 6px; cursor: pointer;
+            font-family: 'Roboto Mono'; font-size: 12px;
+        }
+        .btn-cancel:hover { background: #21262d; color: white; }
+
+        /* --- DATA TABLE (Panel Style) --- */
+        .panel {
+            background: #161b22; border: 1px solid #30363d;
+            border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;
+        }
+        .panel-header {
+            padding: 15px 20px; border-bottom: 1px solid #30363d;
+            background: #0d1117; display: flex; justify-content: space-between; align-items: center;
+        }
+        .panel-header h2 { font-size: 14px; font-family: 'Roboto Mono'; color: white; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+        th {
+            text-align: left; color: #8b949e; padding: 12px 20px;
+            border-bottom: 1px solid #30363d; font-family: 'Roboto Mono'; font-size: 11px;
+        }
+        td { padding: 15px 20px; border-bottom: 1px solid #21262d; color: #e6edf3; vertical-align: middle; }
+        
+        /* Evidence Badges */
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 10px;
+            font-size: 10px; font-family: 'Roboto Mono'; font-weight: bold; border: 1px solid;
+        }
+        .badge-physical { background: rgba(56, 139, 253, 0.1); color: #58a6ff; border-color: rgba(56, 139, 253, 0.4); }
+        .badge-digital { background: rgba(163, 113, 247, 0.1); color: #d2a8ff; border-color: rgba(163, 113, 247, 0.4); }
+        .badge-biological { background: rgba(235, 87, 87, 0.1); color: #ff7b72; border-color: rgba(235, 87, 87, 0.4); }
+
+        /* Action Buttons */
+        .btn-del {
+            background: transparent; border: 1px solid #30363d; color: #ff7b72;
+            padding: 5px 10px; border-radius: 4px; font-size: 10px; 
+            cursor: pointer; font-family: 'Roboto Mono';
+        }
+        .btn-del:hover { border-color: #ff7b72; background: rgba(215, 58, 73, 0.1); }
+
+        /* --- MODALS --- */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background-color: #161b22; padding: 30px; border-radius: 8px;
+            width: 500px; border: 1px solid #30363d; box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; color: #8b949e; font-size: 11px; font-family: 'Roboto Mono'; margin-bottom: 5px; }
+        input, select, textarea {
+            width: 100%; background: #0d1117; border: 1px solid #30363d;
+            color: white; padding: 10px; border-radius: 4px; font-family: 'Inter'; font-size: 13px;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #58a6ff; }
+        
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+        .btn-red-fill { background: #d73a49; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="brand">
+            <span>🕵️‍♂️ FBI SYSTEM</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">📊 DASHBOARD</a></li>
+            <li><a href="agents.html">🕶️ AGENTS</a></li>
+            <li><a href="criminals.html">🔒 CRIMINALS</a></li>
+            <li><a href="cases.html">📁 CASES</a></li>
+            <li class="active"><a href="evidence.html">🧬 EVIDENCE</a></li>
+            <li><a href="warrants.html">⚖️ WARRANTS</a></li>
+        </ul>
+        <div class="user-panel">
+            <p style="font-size:10px; color:#8b949e; margin-bottom:5px;">CURRENT SESSION</p>
+            <h3 id="user-display" style="font-size: 14px; margin-bottom: 5px;">LOADING...</h3>
+            
+            <button class="logout-btn" onclick="handleLogout()">SECURE LOGOUT</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <h1 style="color: #e3b341;">EVIDENCE VAULT</h1>
+            <button class="btn-primary" onclick="openModal()">+ LOG ITEM</button>
+        </header>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h2>CHAIN OF CUSTODY LOG</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">ID</th>
+                        <th style="width: 120px;">CASE REF</th>
+                        <th style="width: 120px;">TYPE</th>
+                        <th>DESCRIPTION</th>
+                        <th style="width: 150px;">DATE LOGGED</th>
+                        <th style="width: 100px;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="evidence-container">
+                    <tr><td colspan="6" style="color:#8b949e; text-align:center; padding:20px;">Scanning vault...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="evModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-family:'Roboto Mono'; margin-bottom:20px; color:#e3b341; border-bottom: 1px solid #30363d; padding-bottom: 10px;">LOG NEW EVIDENCE</h2>
+            <form id="addEvForm">
+                <div class="form-group"><label>LINKED CASE ID</label><input type="number" id="case_id" required placeholder="Ex: 101"></div>
+                <div class="form-group"><label>EVIDENCE TYPE</label>
+                    <select id="type">
+                        <option value="Physical">Physical</option>
+                        <option value="Digital">Digital</option>
+                        <option value="Biological">Biological</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>DESCRIPTION</label><textarea id="desc" rows="3" required placeholder="Detailed description of item..."></textarea></div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">CANCEL</button>
+                    <button type="submit" class="btn-primary" style="background-color: #e3b341; color: black;">LOG ITEM</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content" style="border: 1px solid #d73a49; width: 400px; text-align: center;">
+            <h2 style="font-family:'Roboto Mono'; margin-bottom:15px; color:#d73a49;">⚠️ SECURE DISPOSAL</h2>
+            <p style="margin-bottom: 25px; font-size: 13px; color: #8b949e; line-height: 1.5;">
+                You are about to purge this evidence from the records. This action is irreversible and logged.
+            </p>
+            <input type="hidden" id="deleteTargetId">
+            <div class="form-actions" style="justify-content: center;">
+                <button class="btn-cancel" onclick="closeDeleteModal()">ABORT</button>
+                <button class="btn-red-fill" onclick="executeDelete()">PURGE EVIDENCE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        const role = localStorage.getItem('userRole') || 'Guest';
+        const user = localStorage.getItem('username') || 'Unknown';
+        document.getElementById('user-display').innerText = `${role.toUpperCase()}: ${user.toUpperCase()}`;
+
+        // ⚠️ CHANGE 2: Added Logout Function
+        function handleLogout() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('username');
+            window.location.href = 'index.html'; // Redirect to Entry
+        }
+
+        // --- 2. LOAD DATA ---
+        async function loadEvidence() {
+            try {
+                const res = await fetch('/api/evidence');
+                const data = await res.json();
+                const container = document.getElementById('evidence-container');
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = '<tr><td colspan="6" style="text-align:center;">Vault is empty.</td></tr>';
+                    return;
+                }
+
+                data.forEach(item => {
+                    // Determine Badge Color
+                    let badgeClass = 'badge-physical';
+                    if(item.evidence_type === 'Digital') badgeClass = 'badge-digital';
+                    if(item.evidence_type === 'Biological') badgeClass = 'badge-biological';
+
+                    container.innerHTML += `
+                        <tr>
+                            <td style="font-family:'Roboto Mono'; color:#8b949e">#${item.evidence_id}</td>
+                            <td style="font-weight:bold;">CASE-${item.case_id}</td>
+                            <td><span class="badge ${badgeClass}">${item.evidence_type.toUpperCase()}</span></td>
+                            <td style="color:#8b949e; font-size:12px;">${item.description}</td>
+                            <td>${new Date(item.collection_date).toLocaleDateString()}</td>
+                            <td><button class="btn-del" onclick="openDeleteModal(${item.evidence_id})">DELETE</button></td>
+                        </tr>`;
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('evidence-container').innerHTML = '<tr><td colspan="6" style="color:#ff7b72; text-align:center;">Connection Error.</td></tr>';
+            }
+        }
+
+        // --- 3. ADD LOGIC ---
+        document.getElementById('addEvForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                case_id: document.getElementById('case_id').value,
+                evidence_type: document.getElementById('type').value,
+                description: document.getElementById('desc').value
+            };
+
+            try {
+                const res = await fetch('/api/evidence', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if(res.ok) {
+                    closeModal();
+                    loadEvidence();
+                } else {
+                    alert('Error logging evidence.');
+                }
+            } catch(e) { console.error(e); }
+        });
+
+        // --- 4. DELETE LOGIC ---
+        function openDeleteModal(id) {
+            document.getElementById('deleteTargetId').value = id;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        async function executeDelete() {
+            const id = document.getElementById('deleteTargetId').value;
+            try {
+                const res = await fetch('/api/evidence/' + id, { method: 'DELETE' });
+                const result = await res.json();
+                
+                if(result.success) {
+                    closeDeleteModal();
+                    loadEvidence();
+                } else {
+                    alert('Access Denied: ' + result.message);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // --- 5. UI HELPERS ---
+        function openModal() { document.getElementById('evModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('evModal').style.display = 'none'; }
+
+        // Start
+        loadEvidence();
+    </script>
+</body>
+</html>
